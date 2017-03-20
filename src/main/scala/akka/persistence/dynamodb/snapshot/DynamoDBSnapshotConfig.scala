@@ -8,6 +8,7 @@ import com.typesafe.config.Config
 
 class DynamoDBSnapshotConfig(c: Config) extends DynamoDBConfig {
   val SnapshotTable = c getString "snapshot-table"
+  val SnapshotName = c getString "snapshot-name"
   val AwsKey = c getString "aws-access-key-id"
   val AwsSecret = c getString "aws-secret-access-key"
   val Endpoint = c getString "endpoint"

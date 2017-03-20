@@ -23,6 +23,7 @@ package object snapshot {
   // field names
   val Key = "par"
   val Sort = "num"
+  val Timestamp = "time"
   //    val Payload = "pay"
   //    val SequenceNr = "seq"
   //    val AtomIndex = "idx"

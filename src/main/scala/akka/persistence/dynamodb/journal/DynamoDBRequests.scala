@@ -3,9 +3,11 @@
  */
 package akka.persistence.dynamodb.journal
 
-import java.util.{ Collections, List => JList, Map => JMap, HashMap => JHMap }
-import akka.persistence.{ PersistentRepr, AtomicWrite }
+import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
+
+import akka.persistence.{ AtomicWrite, PersistentRepr }
 import com.amazonaws.services.dynamodbv2.model._
+
 import scala.collection.JavaConverters._
 import scala.collection.{ immutable, mutable }
 import scala.concurrent.Future
@@ -13,7 +15,17 @@ import scala.concurrent.duration._
 import scala.util.{ Failure, Success, Try }
 import scala.util.control.NonFatal
 import akka.Done
+import akka.event.LoggingAdapter
 import akka.pattern.after
+import akka.serialization.Serialization
+
+//trait WithDynamo {
+//  val settings: DynamoDBConfig
+//  val dynamo: DynamoDBHelper
+//  val log: LoggingAdapter
+//  val serialization: Serialization
+//  val context: ActorContext
+//}
 
 trait DynamoDBRequests {
   this: DynamoDBJournal =>
