@@ -4,7 +4,7 @@ DynamoDBJournal for Akka Persistence
 A replicated [Akka Persistence](http://doc.akka.io/docs/akka/2.4.0/scala/persistence.html) journal backed by
 [Amazon DynamoDB](http://aws.amazon.com/dynamodb/).
 
-**Please note that this module does neither include a snapshot-store plugin nor an Akka Persistence Query plugin.**
+**Please note that this module does not include an Akka Persistence Query plugin.**
 
 Scala: `2.11.x` or `2.12.1`  Akka: `2.4.14`  Java: `8+`
 
