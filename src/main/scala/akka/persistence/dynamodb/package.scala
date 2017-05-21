@@ -1,6 +1,6 @@
 /**
-  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
-  */
+ * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
+ */
 package akka.persistence
 
 import java.nio.ByteBuffer
@@ -10,7 +10,7 @@ import akka.actor.{ ActorSystem, Scheduler }
 import akka.event.{ Logging, LoggingAdapter }
 import akka.persistence.dynamodb.journal.DynamoDBHelper
 import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient
+import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDBAsyncClient, AmazonDynamoDBStreamsAsyncClient }
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
 
 import scala.collection.generic.CanBuildFrom
@@ -50,27 +50,29 @@ package object dynamodb {
     }.map(_.result())
 
   def dynamoClient(system: ActorSystem, settings: DynamoDBConfig): DynamoDBHelper = {
-    val client =
+    val (client, streamsClient) =
       if (settings.AwsKey.nonEmpty && settings.AwsSecret.nonEmpty) {
         val conns = settings.client.config.getMaxConnections
         val executor = Executors.newFixedThreadPool(conns)
         val creds = new BasicAWSCredentials(settings.AwsKey, settings.AwsSecret)
-        new AmazonDynamoDBAsyncClient(creds, settings.client.config, executor)
+        (new AmazonDynamoDBAsyncClient(creds, settings.client.config, executor), new AmazonDynamoDBStreamsAsyncClient(creds, settings.client.config, executor))
       } else {
-        new AmazonDynamoDBAsyncClient(settings.client.config)
+        (new AmazonDynamoDBAsyncClient(settings.client.config), new AmazonDynamoDBStreamsAsyncClient(settings.client.config))
       }
+
     client.setEndpoint(settings.Endpoint)
     val dispatcher = system.dispatchers.lookup(settings.ClientDispatcher)
 
     class DynamoDBClient(
-      override val ec:        ExecutionContext,
-      override val dynamoDB:  AmazonDynamoDBAsyncClient,
-      override val settings:  DynamoDBConfig,
-      override val scheduler: Scheduler,
-      override val log:       LoggingAdapter
+      override val ec:              ExecutionContext,
+      override val dynamoDB:        AmazonDynamoDBAsyncClient,
+      override val dynamoDBStreams: AmazonDynamoDBStreamsAsyncClient,
+      override val settings:        DynamoDBConfig,
+      override val scheduler:       Scheduler,
+      override val log:             LoggingAdapter
     ) extends DynamoDBHelper
 
-    new DynamoDBClient(dispatcher, client, settings, system.scheduler, Logging(system, "DynamoDBClient"))
+    new DynamoDBClient(dispatcher, client, streamsClient, settings, system.scheduler, Logging(system, "DynamoDBClient"))
   }
 
 }

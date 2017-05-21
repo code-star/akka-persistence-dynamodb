@@ -3,17 +3,17 @@
  */
 package akka.persistence.dynamodb.journal
 
-import com.amazonaws.{AmazonServiceException, AmazonWebServiceRequest}
+import com.amazonaws.{ AmazonServiceException, AmazonWebServiceRequest }
 import com.amazonaws.handlers.AsyncHandler
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient
+import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDBAsyncClient, AmazonDynamoDBStreamsAsyncClient }
 import com.amazonaws.services.dynamodbv2.model._
 import akka.actor.Scheduler
 import akka.event.LoggingAdapter
 import akka.pattern.after
-import java.util.{concurrent => juc}
+import java.util.{ concurrent => juc }
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.concurrent.duration._
 import scala.reflect.ClassTag
 import scala.util.control.NoStackTrace
@@ -28,6 +28,7 @@ trait DynamoDBHelper {
   implicit val ec: ExecutionContext
   val scheduler: Scheduler
   val dynamoDB: AmazonDynamoDBAsyncClient
+  val dynamoDBStreams: AmazonDynamoDBStreamsAsyncClient
   val log: LoggingAdapter
   val settings: DynamoDBConfig
   import settings._
@@ -182,4 +183,15 @@ trait DynamoDBHelper {
   def batchGetItem(aws: BatchGetItemRequest): Future[BatchGetItemResult] =
     send[BatchGetItemRequest, BatchGetItemResult](aws, dynamoDB.batchGetItemAsync(aws, _))
 
+  def describeStream(aws: DescribeStreamRequest): Future[DescribeStreamResult] =
+    send[DescribeStreamRequest, DescribeStreamResult](aws, dynamoDBStreams.describeStreamAsync(aws, _))
+
+  def getShardIterator(aws: GetShardIteratorRequest): Future[GetShardIteratorResult] =
+    send[GetShardIteratorRequest, GetShardIteratorResult](aws, dynamoDBStreams.getShardIteratorAsync(aws, _))
+
+  def getRecords(aws: GetRecordsRequest): Future[GetRecordsResult] =
+    send[GetRecordsRequest, GetRecordsResult](aws, dynamoDBStreams.getRecordsAsync(aws, _))
+
+  def listStreams(aws: ListStreamsRequest): Future[ListStreamsResult] =
+    send[ListStreamsRequest, ListStreamsResult](aws, dynamoDBStreams.listStreamsAsync(aws, _))
 }

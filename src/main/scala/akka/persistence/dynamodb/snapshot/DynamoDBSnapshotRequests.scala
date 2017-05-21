@@ -1,6 +1,6 @@
 /**
-  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
-  */
+ * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
+ */
 package akka.persistence.dynamodb.snapshot
 
 import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
