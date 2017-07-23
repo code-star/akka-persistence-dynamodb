@@ -9,9 +9,13 @@ import akka.stream._
 import akka.stream.scaladsl._
 import akka.stream.scaladsl.GraphDSL.Implicits._
 import java.util.concurrent.ThreadLocalRandom
+
 import org.HdrHistogram.Histogram
 import com.typesafe.config.ConfigFactory
 import java.util.UUID
+
+import akka.persistence.dynamodb.LatencyReport
+
 import scala.concurrent.duration._
 
 object WriteThroughputBench extends App with DynamoDBUtils {

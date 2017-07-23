@@ -16,10 +16,8 @@ trait Cleanup extends BeforeAndAfter{ this: DynamoDBSpec ⇒
     "akka.persistence.snapshot-store.local.dir").map(s ⇒ new File(system.settings.config.getString(s)))
 
   before {
-    client.query()
+    //client.query()
   }
 
-  override protected def afterTermination() {
-    storageLocations.foreach(FileUtils.deleteDirectory)
-  }
+
 }

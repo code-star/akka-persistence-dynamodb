@@ -5,7 +5,6 @@ package akka.persistence.dynamodb
 
 import java.net.InetAddress
 
-import akka.persistence.dynamodb.journal.DynamoDBHelper
 import akka.serialization.Serialization
 import com.amazonaws.{ClientConfiguration, Protocol}
 import com.typesafe.config.Config
