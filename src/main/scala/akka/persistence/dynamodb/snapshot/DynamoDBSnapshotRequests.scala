@@ -3,20 +3,24 @@
   */
 package akka.persistence.dynamodb.snapshot
 
-import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
+import java.util.{Collections, HashMap => JHMap, List => JList, Map => JMap}
 
-import akka.persistence.{ SelectedSnapshot, SnapshotMetadata, SnapshotSelectionCriteria }
-import akka.persistence.dynamodb.journal.DynamoDBRequests
+import akka.persistence.dynamodb.{DynamoDBRequests, Item}
+import akka.persistence.{SelectedSnapshot, SnapshotMetadata, SnapshotSelectionCriteria}
 import akka.persistence.serialization.Snapshot
 import com.amazonaws.services.dynamodbv2.model._
+
 import collection.JavaConverters._
 import scala.concurrent.Future
+import akka.persistence.dynamodb._
 
 trait DynamoDBSnapshotRequests extends DynamoDBRequests {
   this: DynamoDBSnapshotStore =>
 
   import settings._
   import context.dispatcher
+
+  val toUnit: Any => Unit = _ => ()
 
   def delete(metadata: SnapshotMetadata): Future[Unit] = {
     val request = new DeleteItemRequest()
@@ -25,17 +29,18 @@ trait DynamoDBSnapshotRequests extends DynamoDBRequests {
       .addKeyEntry(SequenceNr, N(metadata.sequenceNr))
 
     dynamo.deleteItem(request)
-      .map(_ => ())
+      .map(toUnit)
   }
 
   def delete(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Unit] = {
-    for {
-      result <- loadQueryResult(persistenceId, criteria).map(result => result.getItems.asScala.map(item => item.get(SequenceNr).getN.toLong))
-      _ <- doBatch(
+    loadQueryResult(persistenceId, criteria).flatMap { queryResult =>
+      val result =queryResult.getItems.asScala.map(item => item.get(SequenceNr).getN.toLong)
+      doBatch(
         batch => s"execute batch delete $batch",
         result.map(snapshotDeleteReq(persistenceId, _))
       )
-    } yield ()
+        .map(toUnit)
+    }
   }
 
   private def snapshotDeleteReq(persistenceId: String, sequenceNr: Long): WriteRequest = {
@@ -49,19 +54,20 @@ trait DynamoDBSnapshotRequests extends DynamoDBRequests {
 
   def save(persistenceId: String, sequenceNr: Long, timestamp: Long, snapshot: Any): Future[Unit] = {
     dynamo.putItem(putItem(toSnapshotItem(persistenceId, sequenceNr, timestamp, snapshot)))
-      .map { _ =>
-        ()
-      }
+      .map(toUnit)
   }
 
   def load(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Option[SelectedSnapshot]] = {
 
     loadQueryResult(persistenceId, criteria)
       .map { result =>
-        val results = result.getItems.asScala.map(item => (item.get(Key).getS, item.get(SequenceNr).getN.toLong))
-        result.getItems.asScala.headOption
-          .map(youngest =>
-            fromSnapshotItem(persistenceId, youngest))
+        if(result.getItems.size()>0){
+          result.getItems.asScala.headOption
+            .map(youngest =>
+              fromSnapshotItem(persistenceId, youngest))
+        } else {
+          None
+        }
       }
   }
 
@@ -132,9 +138,8 @@ trait DynamoDBSnapshotRequests extends DynamoDBRequests {
     val seqNr = item.get(SequenceNr).getN.toLong
     val timestamp = item.get(Timestamp).getN.toLong
     val payloadValue = item.get(Payload).getB
-    serialization.deserialize(payloadValue.array(), classOf[Snapshot])
-      .map(snapshot =>
-        SelectedSnapshot(metadata = SnapshotMetadata(persistenceId, sequenceNr = seqNr, timestamp = timestamp), snapshot = snapshot.data)).get
+    val snapshot = serialization.deserialize(payloadValue.array(), classOf[Snapshot]).get
+    SelectedSnapshot(metadata = SnapshotMetadata(persistenceId, sequenceNr = seqNr, timestamp = timestamp), snapshot = snapshot.data)
   }
 
   private def messagePartitionKey(persistenceId: String): String =
