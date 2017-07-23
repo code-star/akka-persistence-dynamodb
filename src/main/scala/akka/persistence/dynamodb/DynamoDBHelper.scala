@@ -1,24 +1,22 @@
 /**
  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
  */
-package akka.persistence.dynamodb.journal
+package akka.persistence.dynamodb
 
-import com.amazonaws.{AmazonServiceException, AmazonWebServiceRequest}
+import java.util.{concurrent => juc}
+
+import akka.actor.{ActorRef, Scheduler}
+import akka.event.LoggingAdapter
+import akka.pattern.after
+import akka.persistence.dynamodb.journal._
+import com.amazonaws.AmazonWebServiceRequest
 import com.amazonaws.handlers.AsyncHandler
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient
 import com.amazonaws.services.dynamodbv2.model._
-import akka.actor.Scheduler
-import akka.event.LoggingAdapter
-import akka.pattern.after
-import java.util.{concurrent => juc}
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.concurrent.duration._
-import scala.reflect.ClassTag
-import scala.util.control.NoStackTrace
-import akka.actor.ActorRef
-import akka.persistence.dynamodb.{DynamoDBConfig, Item}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 
 case class LatencyReport(nanos: Long, retries: Int)
 private class RetryStateHolder(var retries: Int = 10, var backoff: FiniteDuration = 1.millis)
