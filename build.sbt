@@ -4,14 +4,14 @@ scalaVersion       := "2.11.8"
 crossScalaVersions := Seq("2.11.8", "2.12.1")
 crossVersion       := CrossVersion.binary
 
-val akkaVersion = "2.5.3"
+val akkaVersion = "2.4.14"
 val amzVersion = "1.11.66"
 
 libraryDependencies ++= Seq(
   "com.amazonaws"       % "aws-java-sdk-core"       % amzVersion,
   "com.amazonaws"       % "aws-java-sdk-dynamodb"   % amzVersion,
   "com.typesafe.akka"   %% "akka-persistence"       % akkaVersion,
-  "com.typesafe.akka"   %% "akka-persistence-query" % akkaVersion,
+  "com.typesafe.akka"   %% "akka-persistence-query-experimental" % akkaVersion,
   "com.typesafe.akka"   %% "akka-stream"            % akkaVersion,
   "com.typesafe.akka"   %% "akka-persistence-tck"   % akkaVersion   % "test",
   "com.typesafe.akka"   %% "akka-testkit"           % akkaVersion   % "test",
