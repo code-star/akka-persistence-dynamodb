@@ -150,8 +150,6 @@ class DynamoDBJournal(config: Config) extends AsyncWriteJournal with DynamoDBRec
       seqs <- listAllSeqNr(persistenceId)
     } yield ListAllResult(persistenceId, low, high, seqs)
 
-
-
   override def receivePluginInternal = {
     case OpFinished(persistenceId, f)    => opQueue.remove(persistenceId, f)
     case ListAll(persistenceId, replyTo) => listAll(persistenceId) pipeTo replyTo

@@ -19,7 +19,6 @@ import akka.pattern.after
 private[dynamodb] trait DynamoDBRequests[A <: DynamoDBConfig] {
   this: ActorLogging with Actor =>
 
-
   def settings: A
   def dynamo: DynamoDBHelper
 

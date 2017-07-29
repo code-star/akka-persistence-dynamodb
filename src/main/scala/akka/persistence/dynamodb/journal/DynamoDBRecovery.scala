@@ -3,19 +3,19 @@
  */
 package akka.persistence.dynamodb.journal
 
-import java.util.{Collections, HashMap => JHMap, List => JList, Map => JMap}
+import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
 import java.util.function.Consumer
 import akka.persistence.PersistentRepr
 import akka.persistence.journal.AsyncRecovery
 import com.amazonaws.services.dynamodbv2.model._
 import scala.collection.JavaConverters._
 import scala.collection.immutable
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success }
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
 import java.util.ArrayList
-import akka.actor.{ ActorLogging}
+import akka.actor.{ ActorLogging }
 import akka.stream.stage._
 import akka.stream._
 import akka.persistence.dynamodb._

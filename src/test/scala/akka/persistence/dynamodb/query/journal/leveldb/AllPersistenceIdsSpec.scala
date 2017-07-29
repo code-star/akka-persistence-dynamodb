@@ -1,6 +1,6 @@
 /**
-  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
-  */
+ * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
+ */
 package akka.persistence.dynamodb.query.journal.leveldb
 
 import akka.persistence.dynamodb.query.DynamoDBSpec
@@ -24,7 +24,7 @@ object AllPersistenceIdsSpec {
 }
 
 class AllPersistenceIdsSpec extends DynamoDBSpec(ConfigFactory.load())
-  with Cleanup with ImplicitSender {
+    with Cleanup with ImplicitSender {
 
   implicit val mat = ActorMaterializer()(system)
 

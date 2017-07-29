@@ -4,7 +4,7 @@
 package akka.persistence.dynamodb.journal
 
 import java.nio.ByteBuffer
-import java.util.{HashMap => JHMap}
+import java.util.{ HashMap => JHMap }
 
 import akka.persistence.PersistentRepr
 import com.typesafe.config.Config
@@ -70,10 +70,10 @@ class DynamoDBJournalConfig(c: Config) extends DynamoDBConfig {
     item
   }
 
-  def persistentToByteBuffer(p: PersistentRepr)(implicit serialization:Serialization): ByteBuffer =
+  def persistentToByteBuffer(p: PersistentRepr)(implicit serialization: Serialization): ByteBuffer =
     ByteBuffer.wrap(serialization.serialize(p).get)
 
-  def persistentFromByteBuffer(b: ByteBuffer)(implicit serialization:Serialization): PersistentRepr = {
+  def persistentFromByteBuffer(b: ByteBuffer)(implicit serialization: Serialization): PersistentRepr = {
     serialization.deserialize(ByteString(b).toArray, classOf[PersistentRepr]).get
   }
 }

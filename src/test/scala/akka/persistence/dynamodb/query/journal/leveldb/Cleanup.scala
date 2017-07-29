@@ -6,20 +6,20 @@ package akka.persistence.dynamodb.query.journal.leveldb
 import java.io.File
 
 import akka.Done
-import akka.actor.{Actor, ActorLogging, Props}
-import akka.pattern.{ask, pipe}
+import akka.actor.{ Actor, ActorLogging, Props }
+import akka.pattern.{ ask, pipe }
 import akka.persistence.PersistentActor
-import akka.persistence.dynamodb.{DynamoDBConfig, DynamoDBRequests, dynamoClient}
+import akka.persistence.dynamodb.{ DynamoDBConfig, DynamoDBRequests, dynamoClient }
 
 import scala.collection.JavaConverters._
 import akka.persistence.dynamodb.journal._
 import akka.persistence.dynamodb.query.DynamoDBSpec
 import akka.serialization.SerializationExtension
-import com.amazonaws.services.dynamodbv2.model.{DeleteRequest, ScanRequest, WriteRequest}
+import com.amazonaws.services.dynamodbv2.model.{ DeleteRequest, ScanRequest, WriteRequest }
 import org.apache.commons.io.FileUtils
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
+import org.scalatest.{ BeforeAndAfter, BeforeAndAfterEach }
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{ Await, Future }
 import scala.concurrent.duration._
 
 trait Cleanup extends BeforeAndAfter { this: DynamoDBSpec ⇒
