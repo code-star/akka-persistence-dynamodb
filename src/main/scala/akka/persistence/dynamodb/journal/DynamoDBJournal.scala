@@ -150,13 +150,7 @@ class DynamoDBJournal(config: Config) extends AsyncWriteJournal with DynamoDBRec
       seqs <- listAllSeqNr(persistenceId)
     } yield ListAllResult(persistenceId, low, high, seqs)
 
-  private def purge(persistenceId: String): Future[Done] =
-    for {
-      highest <- readSequenceNr(persistenceId, highest = true)
-      _ <- deleteMessages(persistenceId, 0, highest)
-      _ <- removeLS(persistenceId)
-      _ <- removeHS(persistenceId)
-    } yield Done
+
 
   override def receivePluginInternal = {
     case OpFinished(persistenceId, f)    => opQueue.remove(persistenceId, f)

@@ -2,29 +2,30 @@ package akka.persistence.dynamodb.query
 
 import akka.actor.ActorSystem
 import akka.dispatch.Dispatchers
-import akka.event.{Logging, LoggingAdapter}
+import akka.event.{ Logging, LoggingAdapter }
 import akka.persistence.dynamodb.journal.DynamoDBUtils
 import akka.testkit.TestEvent.Mute
-import akka.testkit.{DeadLettersFilter, TestKit}
-import com.typesafe.config.{Config, ConfigFactory}
+import akka.testkit.{ DeadLettersFilter, TestKit }
+import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalactic.ConversionCheckedTripleEquals
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.Span
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpecLike }
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
 /** inspired by AkkaSpec */
 abstract class DynamoDBSpec(_system: ActorSystem)
-  extends TestKit(_system) with WordSpecLike with Matchers with BeforeAndAfterAll
-    with ConversionCheckedTripleEquals with ScalaFutures with DynamoDBUtils{
+    extends TestKit(_system) with WordSpecLike with Matchers with BeforeAndAfterAll
+    with ConversionCheckedTripleEquals with ScalaFutures with DynamoDBUtils {
 
   implicit val patience = PatienceConfig(testKitSettings.DefaultTimeout.duration, Span(100, org.scalatest.time.Millis))
 
   def this(config: Config) = this(ActorSystem(
     DynamoDBSpec.getCallerName(getClass),
-    ConfigFactory.load(config.withFallback(DynamoDBSpec.testConf))))
+    ConfigFactory.load(config.withFallback(DynamoDBSpec.testConf))
+  ))
 
   def this(s: String) = this(ConfigFactory.parseString(s))
 

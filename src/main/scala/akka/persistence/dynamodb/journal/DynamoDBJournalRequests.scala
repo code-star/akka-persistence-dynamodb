@@ -19,9 +19,7 @@ import akka.actor.{ Actor, ActorLogging }
 import akka.pattern.after
 import akka.persistence.dynamodb._
 
-
-
-trait DynamoDBJournalRequests extends DynamoDBRequests {
+trait DynamoDBJournalRequests extends DynamoDBRequests[DynamoDBJournalConfig] {
   this: DynamoDBJournal =>
   import settings._
 
@@ -244,4 +242,11 @@ trait DynamoDBJournalRequests extends DynamoDBRequests {
       case Failure(other)                           => throw other
     }
 
+  def purge(persistenceId: String): Future[Done] =
+    for {
+      highest <- readSequenceNr(persistenceId, highest = true)
+      _ <- deleteMessages(persistenceId, 0, highest)
+      _ <- removeLS(persistenceId)
+      _ <- removeHS(persistenceId)
+    } yield Done
 }

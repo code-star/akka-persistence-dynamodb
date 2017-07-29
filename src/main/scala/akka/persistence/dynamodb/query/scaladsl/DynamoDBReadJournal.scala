@@ -15,9 +15,9 @@ import com.typesafe.config.Config
 import akka.persistence.query.scaladsl._
 
 class DynamoDBReadJournal(system: ExtendedActorSystem, config: Config) extends ReadJournal
-  with AllPersistenceIdsQuery with CurrentPersistenceIdsQuery
-  with EventsByPersistenceIdQuery with CurrentEventsByPersistenceIdQuery
-  with EventsByTagQuery with CurrentEventsByTagQuery {
+    with AllPersistenceIdsQuery with CurrentPersistenceIdsQuery
+    with EventsByPersistenceIdQuery with CurrentEventsByPersistenceIdQuery
+    with EventsByTagQuery with CurrentEventsByTagQuery {
   override def allPersistenceIds(): Source[String, NotUsed] = ???
 
   override def currentPersistenceIds(): Source[String, NotUsed] = ???
@@ -31,6 +31,6 @@ class DynamoDBReadJournal(system: ExtendedActorSystem, config: Config) extends R
   override def currentEventsByTag(tag: String, offset: Long): Source[EventEnvelope, NotUsed] = ???
 }
 
-object DynamoDBReadJournal{
+object DynamoDBReadJournal {
   val Identifier = "dynamodb.query"
 }

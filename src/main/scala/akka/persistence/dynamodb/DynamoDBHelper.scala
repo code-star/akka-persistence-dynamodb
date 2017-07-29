@@ -3,9 +3,9 @@
  */
 package akka.persistence.dynamodb
 
-import java.util.{concurrent => juc}
+import java.util.{ concurrent => juc }
 
-import akka.actor.{ActorRef, Scheduler}
+import akka.actor.{ ActorRef, Scheduler }
 import akka.event.LoggingAdapter
 import akka.pattern.after
 import akka.persistence.dynamodb.journal._
@@ -16,7 +16,7 @@ import com.amazonaws.services.dynamodbv2.model._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{ ExecutionContext, Future, Promise }
 
 case class LatencyReport(nanos: Long, retries: Int)
 private class RetryStateHolder(var retries: Int = 10, var backoff: FiniteDuration = 1.millis)

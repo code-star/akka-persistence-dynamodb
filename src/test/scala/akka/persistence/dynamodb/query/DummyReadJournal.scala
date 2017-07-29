@@ -1,14 +1,14 @@
 /**
-  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
-  */
+ * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
+ */
 package akka.persistence.dynamodb.query
 
 import akka.NotUsed
-import akka.persistence.query.{ReadJournalProvider}
-import akka.persistence.query.scaladsl.{AllPersistenceIdsQuery, ReadJournal}
+import akka.persistence.query.{ ReadJournalProvider }
+import akka.persistence.query.scaladsl.{ AllPersistenceIdsQuery, ReadJournal }
 import akka.stream.scaladsl.Source
-import com.typesafe.config.{Config, ConfigFactory}
-import akka.persistence.query.{javadsl => akkajavadsl}
+import com.typesafe.config.{ Config, ConfigFactory }
+import akka.persistence.query.{ javadsl => akkajavadsl }
 
 /**
  * Use for tests only!
@@ -34,7 +34,8 @@ object DummyReadJournalProvider {
       |${DummyReadJournal.Identifier} {
       |  class = "${classOf[DummyReadJournalProvider].getCanonicalName}"
       |}
-    """.stripMargin)
+    """.stripMargin
+  )
 }
 
 class DummyReadJournalProvider extends ReadJournalProvider {

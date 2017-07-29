@@ -1,6 +1,6 @@
 /**
-  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
-  */
+ * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
+ */
 package akka.persistence.dynamodb.query.journal.leveldb
 
 import scala.concurrent.duration._
@@ -24,7 +24,7 @@ object EventsByPersistenceIdSpec {
 }
 
 class EventsByPersistenceIdSpec extends DynamoDBSpec(EventsByPersistenceIdSpec.config)
-  with Cleanup with ImplicitSender {
+    with Cleanup with ImplicitSender {
 
   implicit val mat = ActorMaterializer()(system)
 

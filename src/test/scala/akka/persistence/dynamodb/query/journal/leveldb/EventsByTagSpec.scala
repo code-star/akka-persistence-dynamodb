@@ -1,6 +1,6 @@
 /**
-  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
-  */
+ * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
+ */
 package akka.persistence.dynamodb.query.journal.leveldb
 
 import akka.persistence.dynamodb.query.DynamoDBSpec
@@ -8,7 +8,7 @@ import akka.persistence.dynamodb.query.DynamoDBSpec
 import scala.concurrent.duration._
 import akka.persistence.journal.Tagged
 import akka.persistence.journal.WriteEventAdapter
-import akka.persistence.query.{EventEnvelope, EventEnvelope2, PersistenceQuery, Sequence}
+import akka.persistence.query.{ EventEnvelope, EventEnvelope2, PersistenceQuery, Sequence }
 import akka.persistence.query.journal.leveldb.scaladsl.LeveldbReadJournal
 import akka.persistence.query.scaladsl.EventsByTagQuery2
 import akka.stream.ActorMaterializer
@@ -48,7 +48,7 @@ class ColorTagger extends WriteEventAdapter {
 }
 
 class EventsByTagSpec extends DynamoDBSpec(EventsByTagSpec.config)
-  with Cleanup with ImplicitSender {
+    with Cleanup with ImplicitSender {
 
   implicit val mat = ActorMaterializer()(system)
 
