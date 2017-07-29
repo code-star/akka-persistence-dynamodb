@@ -3,25 +3,28 @@
  */
 package akka.persistence.dynamodb.journal
 
-import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
+import java.util.{Collections, HashMap => JHMap, List => JList, Map => JMap}
 
-import akka.persistence.{ AtomicWrite, PersistentRepr }
+import akka.persistence.{AtomicWrite, PersistentRepr}
 import com.amazonaws.services.dynamodbv2.model._
 
 import scala.collection.JavaConverters._
-import scala.collection.{ immutable, mutable }
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.collection.{immutable, mutable}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
 import akka.Done
-import akka.actor.{ Actor, ActorLogging }
+import akka.actor.{Actor, ActorLogging}
 import akka.pattern.after
 import akka.persistence.dynamodb._
+import akka.serialization.Serialization
 
-trait DynamoDBJournalRequests extends DynamoDBRequests[DynamoDBJournalConfig] {
-  this: DynamoDBJournal =>
-  import settings._
+trait DynamoDBJournalRequests extends DynamoDBRequests[DynamoDBJournalConfig] with DynamoDBReadRequests with ActorLogging with Actor {
+  private lazy val settingVal = settings
+  import settingVal._
+  import context.dispatcher
+  def serialization: Serialization
 
   /**
    * Write all messages in a sequence of AtomicWrites. Care must be taken to

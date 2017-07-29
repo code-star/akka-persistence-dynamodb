@@ -46,6 +46,7 @@ class EventsByPersistenceIdSpec extends DynamoDBSpec(EventsByPersistenceIdSpec.c
   }
 
   "Leveldb query EventsByPersistenceId" must {
+    pending
 
     "implement standard EventsByTagQuery" in {
       queries.isInstanceOf[EventsByTagQuery2] should ===(true)

@@ -46,6 +46,9 @@ class DynamoDBJournalConfig(c: Config) extends DynamoDBConfig {
     ",MaxItemSize:" + MaxItemSize +
     ",client.config:" + client
 
+  def keyLength(persistenceId: String, sequenceNr: Long): Int =
+    persistenceId.length + JournalName.length + KeyPayloadOverhead
+
   def messageKey(persistenceId: String, sequenceNr: Long): Item = {
     val item: Item = new JHMap
     item.put(Key, S(messagePartitionKey(persistenceId, sequenceNr)))

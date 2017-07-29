@@ -36,6 +36,7 @@ class AllPersistenceIdsSpec extends DynamoDBSpec(ConfigFactory.load())
     }
 
     "find existing persistenceIds" in {
+      pending
       system.actorOf(TestActor.props("a")) ! "a1"
       expectMsg("a1-done")
       system.actorOf(TestActor.props("b")) ! "b1"
@@ -53,6 +54,7 @@ class AllPersistenceIdsSpec extends DynamoDBSpec(ConfigFactory.load())
     }
 
     "find new persistenceIds" in {
+      pending
       // a, b, c created by previous step
       system.actorOf(TestActor.props("d")) ! "d1"
       expectMsg("d1-done")

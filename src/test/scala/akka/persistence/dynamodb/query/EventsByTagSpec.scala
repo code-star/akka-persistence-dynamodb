@@ -53,6 +53,7 @@ class EventsByTagSpec extends DynamoDBSpec(EventsByTagSpec.config)
   val queries = PersistenceQuery(system).readJournalFor[LeveldbReadJournal](LeveldbReadJournal.Identifier)
 
   "Leveldb query EventsByTag" must {
+    pending
     "implement standard EventsByTagQuery" in {
       queries.isInstanceOf[EventsByTagQuery2] should ===(true)
     }

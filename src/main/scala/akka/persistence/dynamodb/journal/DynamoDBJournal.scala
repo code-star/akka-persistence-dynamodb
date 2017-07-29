@@ -157,9 +157,6 @@ class DynamoDBJournal(config: Config) extends AsyncWriteJournal with DynamoDBRec
     case SetDBHelperReporter(ref)        => dynamo.setReporter(ref)
   }
 
-  def keyLength(persistenceId: String, sequenceNr: Long): Int =
-    persistenceId.length + JournalName.length + KeyPayloadOverhead
-
   def logFailure[T](desc: String)(f: Future[T]): Future[T] = f.transform(conforms, ex => {
     log.error(ex, "operation failed: " + desc)
     ex
