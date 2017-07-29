@@ -3,28 +3,30 @@
  */
 package akka.persistence.dynamodb.journal
 
-import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
+import java.util.{Collections, HashMap => JHMap, List => JList, Map => JMap}
 import java.util.function.Consumer
 import akka.persistence.PersistentRepr
 import akka.persistence.journal.AsyncRecovery
 import com.amazonaws.services.dynamodbv2.model._
 import scala.collection.JavaConverters._
 import scala.collection.immutable
-import scala.concurrent.Future
-import scala.util.{ Failure, Success }
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
 import java.util.ArrayList
+import akka.actor.{ ActorLogging}
 import akka.stream.stage._
 import akka.stream._
 import akka.persistence.dynamodb._
+import akka.serialization.Serialization
 
 object DynamoDBRecovery {
   case class ReplayBatch(items: Seq[Item], map: Map[AttributeValue, Long]) {
     def sorted: immutable.Iterable[Item] =
       items.foldLeft(immutable.TreeMap.empty[Long, Item])((acc, i) =>
         acc.updated(itemToSeq(i), i))
-        .map(_._2)
+        .map { case (_, item) => item }
     def ids: Seq[Long] = items.map(itemToSeq).sorted
     private def itemToSeq(i: Item): Long = map(i.get(Key)) * 100 + i.get(Sort).getN.toInt
   }
@@ -101,8 +103,7 @@ object RemoveIncompleteAtoms extends GraphStage[FlowShape[Item, List[Item]]] {
   }
 }
 
-trait DynamoDBRecovery extends AsyncRecovery { this: DynamoDBJournal =>
-  import DynamoDBRecovery._
+trait DynamoDBRecovery extends AsyncRecovery with DynamoDBReadRequests { this: DynamoDBJournal =>
   import settings._
 
   implicit lazy val replayDispatcher = context.system.dispatchers.lookup(ReplayDispatcher)
@@ -130,6 +131,18 @@ trait DynamoDBRecovery extends AsyncRecovery { this: DynamoDBJournal =>
           .map(count => log.debug("replay finished for {} with {} events", persistenceId, count))
       }
     }
+}
+
+trait DynamoDBReadRequests {
+  this: DynamoDBJournalRequests with ActorLogging =>
+  import DynamoDBRecovery._
+  def dynamo: DynamoDBHelper
+  private lazy val settingsVal = settings
+  import settingsVal._
+
+  implicit def replayDispatcher: ExecutionContext
+  implicit def materializer: ActorMaterializer
+  implicit def serialization: Serialization
 
   def getReplayBatch(persistenceId: String, seqNrs: Seq[Long]): Future[ReplayBatch] = {
     val batchKeys = seqNrs.map(s => messageKey(persistenceId, s) -> (s / 100))
