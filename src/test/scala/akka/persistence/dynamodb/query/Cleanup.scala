@@ -1,26 +1,20 @@
 /**
  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
  */
-package akka.persistence.dynamodb.query.journal.leveldb
-
-import java.io.File
+package akka.persistence.dynamodb.query
 
 import akka.Done
 import akka.actor.{ Actor, ActorLogging, Props }
 import akka.pattern.{ ask, pipe }
-import akka.persistence.PersistentActor
-import akka.persistence.dynamodb.{ DynamoDBConfig, DynamoDBRequests, dynamoClient }
-
-import scala.collection.JavaConverters._
 import akka.persistence.dynamodb.journal._
-import akka.persistence.dynamodb.query.DynamoDBSpec
+import akka.persistence.dynamodb.{ DynamoDBRequests, dynamoClient }
 import akka.serialization.SerializationExtension
 import com.amazonaws.services.dynamodbv2.model.{ DeleteRequest, ScanRequest, WriteRequest }
-import org.apache.commons.io.FileUtils
-import org.scalatest.{ BeforeAndAfter, BeforeAndAfterEach }
+import org.scalatest.BeforeAndAfter
 
-import scala.concurrent.{ Await, Future }
+import scala.collection.JavaConverters._
 import scala.concurrent.duration._
+import scala.concurrent.{ Await, Future }
 
 trait Cleanup extends BeforeAndAfter { this: DynamoDBSpec ⇒
 
@@ -36,8 +30,8 @@ trait Cleanup extends BeforeAndAfter { this: DynamoDBSpec ⇒
 class CleanupActor(val settings: DynamoDBJournalConfig) extends Actor with DynamoDBRequests[DynamoDBJournalConfig] with ActorLogging {
   val dynamo = dynamoClient(context.system, settings)
   val serialization = SerializationExtension(context.system)
-  import settings._
   import context.dispatcher
+  import settings._
 
   override def receive = {
     case "delete" => delete.pipeTo(sender())

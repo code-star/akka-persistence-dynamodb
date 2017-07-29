@@ -1,10 +1,10 @@
 /**
  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
  */
-package akka.persistence.dynamodb.query.journal.leveldb
+package akka.persistence.dynamodb.query
 
-import akka.persistence.PersistentActor
 import akka.actor.Props
+import akka.persistence.PersistentActor
 
 object TestActor {
   def props(persistenceId: String): Props =

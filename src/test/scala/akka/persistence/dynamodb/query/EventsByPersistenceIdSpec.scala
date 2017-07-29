@@ -1,17 +1,17 @@
 /**
  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
  */
-package akka.persistence.dynamodb.query.journal.leveldb
+package akka.persistence.dynamodb.query
 
-import scala.concurrent.duration._
 import akka.actor.ActorRef
-import akka.persistence.dynamodb.query.DynamoDBSpec
 import akka.persistence.query.PersistenceQuery
 import akka.persistence.query.journal.leveldb.scaladsl.LeveldbReadJournal
 import akka.persistence.query.scaladsl.EventsByTagQuery2
 import akka.stream.ActorMaterializer
 import akka.stream.testkit.scaladsl.TestSink
 import akka.testkit.ImplicitSender
+
+import scala.concurrent.duration._
 
 object EventsByPersistenceIdSpec {
   val config = """
