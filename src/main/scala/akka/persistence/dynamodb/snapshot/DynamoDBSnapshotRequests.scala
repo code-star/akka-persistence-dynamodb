@@ -1,12 +1,12 @@
 /**
-  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
-  */
+ * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
+ */
 package akka.persistence.dynamodb.snapshot
 
-import java.util.{Collections, HashMap => JHMap, List => JList, Map => JMap}
+import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
 
-import akka.persistence.dynamodb.{DynamoDBRequests, Item}
-import akka.persistence.{SelectedSnapshot, SnapshotMetadata, SnapshotSelectionCriteria}
+import akka.persistence.dynamodb.{ DynamoDBRequests, Item }
+import akka.persistence.{ SelectedSnapshot, SnapshotMetadata, SnapshotSelectionCriteria }
 import akka.persistence.serialization.Snapshot
 import com.amazonaws.services.dynamodbv2.model._
 
@@ -14,7 +14,7 @@ import collection.JavaConverters._
 import scala.concurrent.Future
 import akka.persistence.dynamodb._
 
-trait DynamoDBSnapshotRequests extends DynamoDBRequests {
+trait DynamoDBSnapshotRequests extends DynamoDBRequests[DynamoDBSnapshotConfig] {
   this: DynamoDBSnapshotStore =>
 
   import settings._
@@ -34,7 +34,7 @@ trait DynamoDBSnapshotRequests extends DynamoDBRequests {
 
   def delete(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Unit] = {
     loadQueryResult(persistenceId, criteria).flatMap { queryResult =>
-      val result =queryResult.getItems.asScala.map(item => item.get(SequenceNr).getN.toLong)
+      val result = queryResult.getItems.asScala.map(item => item.get(SequenceNr).getN.toLong)
       doBatch(
         batch => s"execute batch delete $batch",
         result.map(snapshotDeleteReq(persistenceId, _))
@@ -61,7 +61,7 @@ trait DynamoDBSnapshotRequests extends DynamoDBRequests {
 
     loadQueryResult(persistenceId, criteria)
       .map { result =>
-        if(result.getItems.size()>0){
+        if (result.getItems.size() > 0) {
           result.getItems.asScala.headOption
             .map(youngest =>
               fromSnapshotItem(persistenceId, youngest))

@@ -71,7 +71,7 @@ case class Purged(persistenceId: String)
 class DynamoDBJournal(config: Config) extends AsyncWriteJournal with DynamoDBRecovery with DynamoDBJournalRequests with ActorLogging {
   import context.dispatcher
 
-  implicit val materializer = ActorMaterializer()
+  implicit val materializer = ActorMaterializer()(context)
 
   val extension = Persistence(context.system)
   val serialization = SerializationExtension(context.system)
@@ -150,53 +150,11 @@ class DynamoDBJournal(config: Config) extends AsyncWriteJournal with DynamoDBRec
       seqs <- listAllSeqNr(persistenceId)
     } yield ListAllResult(persistenceId, low, high, seqs)
 
-  private def purge(persistenceId: String): Future[Done] =
-    for {
-      highest <- readSequenceNr(persistenceId, highest = true)
-      _ <- deleteMessages(persistenceId, 0, highest)
-      _ <- removeLS(persistenceId)
-      _ <- removeHS(persistenceId)
-    } yield Done
-
   override def receivePluginInternal = {
     case OpFinished(persistenceId, f)    => opQueue.remove(persistenceId, f)
     case ListAll(persistenceId, replyTo) => listAll(persistenceId) pipeTo replyTo
     case Purge(persistenceId, replyTo)   => purge(persistenceId).map(_ => Purged(persistenceId)) pipeTo replyTo
     case SetDBHelperReporter(ref)        => dynamo.setReporter(ref)
-  }
-
-  def keyLength(persistenceId: String, sequenceNr: Long): Int =
-    persistenceId.length + JournalName.length + KeyPayloadOverhead
-
-  def messageKey(persistenceId: String, sequenceNr: Long): Item = {
-    val item: Item = new JHMap
-    item.put(Key, S(messagePartitionKey(persistenceId, sequenceNr)))
-    item.put(Sort, N(sequenceNr % 100))
-    item
-  }
-
-  def messagePartitionKey(persistenceId: String, sequenceNr: Long): String =
-    s"$JournalName-P-$persistenceId-${sequenceNr / 100}"
-
-  def highSeqKey(persistenceId: String, shard: Long) = {
-    val item: Item = new JHMap
-    item.put(Key, S(s"$JournalName-SH-$persistenceId-$shard"))
-    item.put(Sort, Naught)
-    item
-  }
-
-  def lowSeqKey(persistenceId: String, shard: Long) = {
-    val item: Item = new JHMap
-    item.put(Key, S(s"$JournalName-SL-$persistenceId-$shard"))
-    item.put(Sort, Naught)
-    item
-  }
-
-  def persistentToByteBuffer(p: PersistentRepr): ByteBuffer =
-    ByteBuffer.wrap(serialization.serialize(p).get)
-
-  def persistentFromByteBuffer(b: ByteBuffer): PersistentRepr = {
-    serialization.deserialize(ByteString(b).toArray, classOf[PersistentRepr]).get
   }
 
   def logFailure[T](desc: String)(f: Future[T]): Future[T] = f.transform(conforms, ex => {

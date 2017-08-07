@@ -1,15 +1,16 @@
 /**
-  * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
-  */
+ * Copyright (C) 2016 Typesafe Inc. <http://www.typesafe.com>
+ */
 package akka.persistence.dynamodb
 
 import java.util.Collections
 import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
 
 import akka.Done
-import akka.actor.{Actor, ActorLogging}
-import akka.persistence.dynamodb.journal.{DynamoDBHelper}
+import akka.actor.{ Actor, ActorLogging }
+import akka.event.LoggingAdapter
 import com.amazonaws.services.dynamodbv2.model._
+
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
@@ -17,14 +18,15 @@ import scala.util.control.NonFatal
 import scala.concurrent.duration._
 import akka.pattern.after
 
-private[dynamodb] trait DynamoDBRequests {
-  this:  ActorLogging with Actor =>
+private[dynamodb] trait DynamoDBRequests[A <: DynamoDBConfig] {
+  this: Actor =>
 
-  val settings: DynamoDBConfig
+  def settings: A
   def dynamo: DynamoDBHelper
-
+  def log: LoggingAdapter
   import context.dispatcher
-  import settings._
+  private lazy val settingsVal = settings
+  import settingsVal._
 
   def putItem(item: Item): PutItemRequest = new PutItemRequest().withTableName(Table).withItem(item)
 
