@@ -1,8 +1,8 @@
 package akka.persistence.dynamodb.query.javadsl
-import akka.persistence.dynamodb.query.scaladsl.{DynamoDBReadJournal => ScalaReadJournal}
+import akka.persistence.dynamodb.query.scaladsl.{ DynamoDBReadJournal => ScalaReadJournal }
 import akka.persistence.query.javadsl._
 import akka.NotUsed
-import akka.persistence.query.{EventEnvelope, EventEnvelope2, Offset}
+import akka.persistence.query.{ EventEnvelope, EventEnvelope2, Offset }
 import akka.stream.javadsl.Source
 
 class DynamoDBReadJournal(scalaReadJournal: ScalaReadJournal) extends ReadJournal

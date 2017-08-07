@@ -3,7 +3,7 @@
  */
 package akka.persistence.dynamodb.journal
 
-import java.util.{Collections, HashMap => JHMap, List => JList, Map => JMap}
+import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
 import java.util.function.Consumer
 
 import akka.persistence.PersistentRepr
@@ -12,13 +12,14 @@ import com.amazonaws.services.dynamodbv2.model._
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success }
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
 import java.util.ArrayList
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{ Actor, ActorLogging }
+import akka.event.LoggingAdapter
 import akka.stream.stage._
 import akka.stream._
 import akka.persistence.dynamodb._
@@ -136,8 +137,8 @@ trait DynamoDBRecovery extends AsyncRecovery with DynamoDBReadRequests { this: D
     }
 }
 
-trait DynamoDBReadRequests extends DynamoDBRequests[DynamoDBJournalConfig]{
-  this:  ActorLogging with Actor =>
+trait DynamoDBReadRequests extends DynamoDBRequests[DynamoDBJournalConfig] {
+  this: Actor =>
   import DynamoDBRecovery._
   def dynamo: DynamoDBHelper
   private lazy val settingsVal = settings
@@ -146,6 +147,7 @@ trait DynamoDBReadRequests extends DynamoDBRequests[DynamoDBJournalConfig]{
   implicit def replayDispatcher: ExecutionContext
   implicit def materializer: ActorMaterializer
   implicit def serialization: Serialization
+  def log: LoggingAdapter
 
   def getReplayBatch(persistenceId: String, seqNrs: Seq[Long]): Future[ReplayBatch] = {
     val batchKeys = seqNrs.map(s => messageKey(persistenceId, s) -> (s / 100))

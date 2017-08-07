@@ -8,7 +8,9 @@ import java.util.{ Collections, HashMap => JHMap, List => JList, Map => JMap }
 
 import akka.Done
 import akka.actor.{ Actor, ActorLogging }
+import akka.event.LoggingAdapter
 import com.amazonaws.services.dynamodbv2.model._
+
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
@@ -17,11 +19,11 @@ import scala.concurrent.duration._
 import akka.pattern.after
 
 private[dynamodb] trait DynamoDBRequests[A <: DynamoDBConfig] {
-  this: ActorLogging with Actor =>
+  this: Actor =>
 
   def settings: A
   def dynamo: DynamoDBHelper
-
+  def log: LoggingAdapter
   import context.dispatcher
   private lazy val settingsVal = settings
   import settingsVal._

@@ -7,7 +7,7 @@ import java.net.URLEncoder
 import akka.NotUsed
 import akka.actor.ExtendedActorSystem
 import akka.event.Logging
-import akka.persistence.query.{EventEnvelope, EventEnvelope2, Offset}
+import akka.persistence.query.{ EventEnvelope, EventEnvelope2, Offset }
 import akka.stream.javadsl
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
